@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Validator</title>
+
+</head>
+
+<body>
+    <h2>Email Validator</h2>
+
+    <p>Enter email addresses, one per line.</p>
+
+    <textarea
+        id="input"
+        rows="8"
+        placeholder="alice@gmail.com&#10;bob@yahoo.com&#10;someone@example.com"
+    ></textarea>
+
+    <br><br>
+
+    <button id="send">Validate Emails</button>
+
+    <h3>Results</h3>
+    <pre id="result"></pre>
+
+    <script>
+        const input = document.getElementById("input");
+        const result = document.getElementById("result");
+        const button = document.getElementById("send");
+
+        button.addEventListener("click", async () => {
+            const emails = input.value
+                .split(/\r?\n/)
+                .map(email => email.trim())
+                .filter(email => email.length > 0);
+
+            if (emails.length === 0) {
+                result.textContent = "Please enter at least one email address.";
+                return;
+            }
+
+            button.disabled = true;
+            result.textContent = "Validating emails...";
+
+            try {
+                const response = await fetch(
+                    "http://127.0.0.1:8000/api/process",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ emails })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.detail
+                            ? JSON.stringify(data.detail)
+                            : `HTTP ${response.status}`
+                    );
+                }
+
+                result.textContent = JSON.stringify(data, null, 2);
+
+            } catch (error) {
+                result.textContent = "Error: " + error.message;
+            } finally {
+                button.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
