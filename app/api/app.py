@@ -25,6 +25,7 @@ async def process(data: RequestData):
         data.emails,
         timeout=10,
         verify=True,
+        debug=True
     )
 
     # Normalize a single result to a list.
