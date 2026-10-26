@@ -3,7 +3,7 @@ from verify_email import verify_email
 import multiprocessing
 
 
-emails = ["xyaaaaaa@gmail.com"]
+emails = ["thoyajmithra17@gmail.com"]
 
 
 def validate(email):
@@ -24,12 +24,7 @@ def validate(email):
 
 
 if __name__ == "__main__":
-    start = datetime.now()
 
     with multiprocessing.Pool(processes=2) as pool:
         results = pool.map(validate, emails)
 
-    elapsed = (datetime.now() - start).total_seconds()
-
-    print("Results:", results)
-    print(f"Total time: {elapsed:.3f} seconds")

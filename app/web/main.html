@@ -7,13 +7,15 @@
 
 </head>
 
-<body>
+<body style="display:flex;gap:20px;align-items:flex-start">
+    <div>
     <h2>Email Validator</h2>
 
     <p>Enter email addresses, one per line.</p>
 
     <textarea
         id="input"
+        cols="48"
         rows="8"
         placeholder="alice@gmail.com&#10;bob@yahoo.com&#10;someone@example.com"
     ></textarea>
@@ -21,13 +23,28 @@
     <br><br>
 
     <button id="send">Validate Emails</button>
+    </div>
+    <div>
 
     <h3>Results</h3>
+    <table id="result" border="1" style="border-collapse: collapse; width: 100%; max-width: 600px; text-align: left;">
+    <thead>
+        <tr>
+        <th style="padding: 10px; min-width: 250px;">Email</th>
+        <th style="padding: 10px; min-width: 100px;">Status</th>
+        <th style="padding: 10px; min-width: 250px;">Message</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+    </table>
     <pre id="result"></pre>
+
+    </div>
 
     <script>
         const input = document.getElementById("input");
         const result = document.getElementById("result");
+        const tbody = result.querySelector("tbody");
         const button = document.getElementById("send");
 
         button.addEventListener("click", async () => {
@@ -37,12 +54,14 @@
                 .filter(email => email.length > 0);
 
             if (emails.length === 0) {
-                result.textContent = "Please enter at least one email address.";
+                // result.textContent = "Please enter at least one email address.";
+                tbody.innerHTML = "<tr><td colspan='3'>Please enter at least one email address.</td></tr>";
                 return;
             }
 
             button.disabled = true;
-            result.textContent = "Validating emails...";
+            // result.textContent = "Validating emails...";
+            tbody.innerHTML = "<tr><td colspan='3'>Validating emails...</td></tr>";
 
             try {
                 const response = await fetch(
@@ -66,7 +85,13 @@
                     );
                 }
 
-                result.textContent = JSON.stringify(data, null, 2);
+                // result.textContent = JSON.stringify(data, null, 2);
+                tbody.innerHTML = "";
+                data.results.forEach(r => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${r.email}</td><td>${r.status}</td><td>${r.message}</td>`;
+                    tbody.appendChild(tr);
+                });
 
             } catch (error) {
                 result.textContent = "Error: " + error.message;
