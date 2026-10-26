@@ -4,43 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Validator</title>
-
 </head>
 
 <body style="display:flex;gap:20px;align-items:flex-start">
     <div>
-    <h2>Email Validator</h2>
+        <h2>Email Validator</h2>
 
-    <p>Enter email addresses, one per line.</p>
+        <p>Enter email addresses, one per line.</p>
 
-    <textarea
-        id="input"
-        cols="48"
-        rows="8"
-        placeholder="alice@gmail.com&#10;bob@yahoo.com&#10;someone@example.com"
-    ></textarea>
+        <textarea
+            id="input"
+            cols="48"
+            rows="8"
+            placeholder="alice@gmail.com&#10;bob@yahoo.com&#10;someone@example.com"
+        ></textarea>
 
-    <br><br>
+        <br><br>
 
-    <button id="send">Validate Emails</button>
+        <button id="send">Validate Emails</button>
     </div>
+
     <div>
+        <h3>Results</h3>
 
-    <h3>Results</h3>
-    <table id="result" border="1" style="border-collapse: collapse; width: 100%; max-width: 900px; text-align: left;">
-    <thead>
-        <tr>
-        <th style="padding: 10px; min-width: 250px;">Email</th>
-        <th style="padding: 10px; min-width: 100px;">Status</th>
-        <th style="padding: 10px; min-width: 100px;">MX</th>
-        <th style="padding: 10px; min-width: 100px;">SMTP</th>
-        <th style="padding: 10px; min-width: 250px;">Message</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-    </table>
-    <pre id="error"></pre>
+        <table id="result" border="1" style="border-collapse: collapse; width: 100%; max-width: 1100px; text-align: left;">
+            <thead>
+                <tr>
+                    <th style="padding: 10px; min-width: 250px;">Email</th>
+                    <th style="padding: 10px; min-width: 120px;">Status</th>
+                    <th style="padding: 10px; min-width: 100px;">MX</th>
+                    <th style="padding: 10px; min-width: 100px;">SMTP</th>
+                    <th style="padding: 10px; min-width: 140px;">Mailbox Exists</th>
+                    <th style="padding: 10px; min-width: 250px;">Message</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
 
+        <pre id="error"></pre>
     </div>
 
     <script>
@@ -48,6 +49,7 @@
         const result = document.getElementById("result");
         const tbody = result.querySelector("tbody");
         const button = document.getElementById("send");
+        const errorElement = document.getElementById("error");
 
         button.addEventListener("click", async () => {
             const emails = input.value
@@ -55,13 +57,15 @@
                 .map(email => email.trim())
                 .filter(email => email.length > 0);
 
+            errorElement.textContent = "";
+
             if (emails.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='5'>Please enter at least one email address.</td></tr>";
+                tbody.innerHTML = "<tr><td colspan='6'>Please enter at least one email address.</td></tr>";
                 return;
             }
 
             button.disabled = true;
-            tbody.innerHTML = "<tr><td colspan='5'>Validating emails...</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='6'>Validating emails...</td></tr>";
 
             try {
                 const response = await fetch(
@@ -86,20 +90,32 @@
                 }
 
                 tbody.innerHTML = "";
+
                 data.results.forEach(r => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${r.email}</td>
-                        <td>${r.status}</td>
-                        <td>${r.result?.MX ?? "Unknown"}</td>
-                        <td>${r.result?.SMTP ?? "Unknown"}</td>
-                        <td>${r.message}</td>
-                    `;
+                    const tr = document.createElement("tr");
+
+                    const values = [
+                        r.email,
+                        r.status,
+                        r.result?.checks?.hasMxRecords ?? "Unknown",
+                        r.result?.checks?.smtpConnectable ?? "Unknown",
+                        r.result?.checks?.mailboxExists ?? "Unknown",
+                        r.message
+                    ];
+
+                    values.forEach(value => {
+                        const td = document.createElement("td");
+                        td.style.padding = "10px";
+                        td.textContent = value;
+                        tr.appendChild(td);
+                    });
+
                     tbody.appendChild(tr);
                 });
 
             } catch (error) {
-                document.getElementById("error").textContent = "Error: " + error.message;
+                tbody.innerHTML = "";
+                errorElement.textContent = "Error: " + error.message;
             } finally {
                 button.disabled = false;
             }

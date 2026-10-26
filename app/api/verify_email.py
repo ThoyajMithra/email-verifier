@@ -259,7 +259,7 @@ async def handler_verify(mx_hosts, email, timeout=DEFAULT_TIMEOUT):
         return {
                 "vaild":True,
                 "MX":True,
-                "SMTP":False,
+                "SMTP":None,
                 "result":None
             }
 

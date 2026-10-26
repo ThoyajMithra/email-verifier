@@ -1,3 +1,6 @@
 uvicorn
 fastapi
 aiodns
+requests
+httpx
+python-dotenv
