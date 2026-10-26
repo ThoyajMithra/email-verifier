@@ -27,17 +27,19 @@
     <div>
 
     <h3>Results</h3>
-    <table id="result" border="1" style="border-collapse: collapse; width: 100%; max-width: 600px; text-align: left;">
+    <table id="result" border="1" style="border-collapse: collapse; width: 100%; max-width: 900px; text-align: left;">
     <thead>
         <tr>
         <th style="padding: 10px; min-width: 250px;">Email</th>
         <th style="padding: 10px; min-width: 100px;">Status</th>
+        <th style="padding: 10px; min-width: 100px;">MX</th>
+        <th style="padding: 10px; min-width: 100px;">SMTP</th>
         <th style="padding: 10px; min-width: 250px;">Message</th>
         </tr>
     </thead>
     <tbody></tbody>
     </table>
-    <pre id="result"></pre>
+    <pre id="error"></pre>
 
     </div>
 
@@ -54,14 +56,12 @@
                 .filter(email => email.length > 0);
 
             if (emails.length === 0) {
-                // result.textContent = "Please enter at least one email address.";
-                tbody.innerHTML = "<tr><td colspan='3'>Please enter at least one email address.</td></tr>";
+                tbody.innerHTML = "<tr><td colspan='5'>Please enter at least one email address.</td></tr>";
                 return;
             }
 
             button.disabled = true;
-            // result.textContent = "Validating emails...";
-            tbody.innerHTML = "<tr><td colspan='3'>Validating emails...</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='5'>Validating emails...</td></tr>";
 
             try {
                 const response = await fetch(
@@ -85,16 +85,21 @@
                     );
                 }
 
-                // result.textContent = JSON.stringify(data, null, 2);
                 tbody.innerHTML = "";
                 data.results.forEach(r => {
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${r.email}</td><td>${r.status}</td><td>${r.message}</td>`;
+                    tr.innerHTML = `
+                        <td>${r.email}</td>
+                        <td>${r.status}</td>
+                        <td>${r.result?.MX ?? "Unknown"}</td>
+                        <td>${r.result?.SMTP ?? "Unknown"}</td>
+                        <td>${r.message}</td>
+                    `;
                     tbody.appendChild(tr);
                 });
 
             } catch (error) {
-                result.textContent = "Error: " + error.message;
+                document.getElementById("error").textContent = "Error: " + error.message;
             } finally {
                 button.disabled = false;
             }

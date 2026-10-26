@@ -232,7 +232,12 @@ async def handler_verify(mx_hosts, email, timeout=DEFAULT_TIMEOUT):
     """
 
     if not mx_hosts:
-        return False
+        return {
+                "vaild":True,
+                "MX":False,
+                "SMTP":False,
+                "result":False
+            }
 
     inconclusive = False
 
@@ -240,16 +245,31 @@ async def handler_verify(mx_hosts, email, timeout=DEFAULT_TIMEOUT):
         result = await network_calls(mx, email, timeout)
 
         if result is True:
-            return True
+            return {
+                    "vaild":True,
+                    "MX":True,
+                    "SMTP":True,
+                    "result":True
+                }
 
         if result is None:
             inconclusive = True
 
     if inconclusive:
-        return None
+        return {
+                "vaild":True,
+                "MX":True,
+                "SMTP":False,
+                "result":None
+            }
 
 
-    return False
+    return {
+            "vaild":True,
+            "MX":True,
+            "SMTP":False,
+            "result":False
+        }
 
 
 # --------------------------------------------------
@@ -262,24 +282,49 @@ async def _verify_email(email, timeout=DEFAULT_TIMEOUT, verify=True):
     """
 
     if not isinstance(email, str):
-        return False
+        return {
+            "vaild":False,
+            "MX":False,
+            "SMTP":False,
+            "result":False
+        }
 
     email = email.strip()
 
     if not syntax_check(email):
-        return False
+        return {
+                "vaild":False,
+                "MX":False,
+                "SMTP":False,
+                "result":False
+            }
 
     # Syntax-only mode.
     if not verify:
-        return True
+        return {
+                "vaild":False,
+                "MX":False,
+                "SMTP":False,
+                "result":False
+            }
 
     mx_hosts = await get_mx_hosts(email)
 
     if mx_hosts is None:
-        return None
+        return {
+                "vaild":True,
+                "MX":False,
+                "SMTP":False,
+                "result":False
+            }
 
     if not mx_hosts:
-        return False
+        return {
+                "vaild":True,
+                "MX":False,
+                "SMTP":False,
+                "result":False
+            }
 
     return await handler_verify(
         mx_hosts,

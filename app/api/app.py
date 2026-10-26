@@ -35,10 +35,10 @@ async def process(data: RequestData):
     response = []
 
     for email, result in zip(data.emails, results):
-        if result is True:
+        if result["result"] is True:
             status = "likely_deliverable"
             message = "The mail server accepted the recipient."
-        elif result is False:
+        elif result["result"] is False:
             status = "likely_to_bounce"
             message = "The address failed one or more validation checks."
         else:
@@ -49,6 +49,7 @@ async def process(data: RequestData):
             "email": email,
             "status": status,
             "message": message,
+            "result":result,
         })
 
     return {
