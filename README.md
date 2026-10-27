@@ -25,10 +25,11 @@ It can check email syntax, MX records, SMTP connectivity, and the provider's ass
 The application does not connect directly to mail servers to verify mailboxes. Instead, it relies on the third-party API, so the checks available depend on that service.
 
 It could not solve issue:
--	GreyLisiting ( Might or Might not)
--	Rate Limiting /IP Reputation (With out API)
--	All In Bound (Can’t do anything)
--	SMTP server rejection (Have to retry)
+
+-	GreyLisiting ( Might or Might not).
+-	Rate Limiting /IP Reputation (With out API).
+-	All In Bound (Can’t do anything).
+-	SMTP server rejection (Have to retry).
 
 Some mail servers restrict mailbox verification or hide whether an address exists. Therefore, SMTP connectivity does not guarantee that a mailbox exists, and a deliverable result does not guarantee successful email delivery.
 
