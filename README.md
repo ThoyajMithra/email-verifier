@@ -12,13 +12,7 @@ You can enter multiple email addresses at once and view the results in a table.
 - Reports whether the mailbox is likely to exist.
 - Classifies addresses as deliverable, undeliverable, risky, or unknown.
 
-
-## How It Works
-
-1. Enter one or more email addresses, with each address on a separate line.
-2. Click **Validate Emails**.
-3. The backend sends each address to the verification API.
-4. The results are displayed in a table.
+Realese: https://thoyajmithra.github.io/email-verifier/
 
 ## Deployment Limitations
 
@@ -29,6 +23,12 @@ The deployed application uses the VerifyAnyEmail API to verify email addresses.
 It can check email syntax, MX records, SMTP connectivity, and the provider's assessment of mailbox existence when those results are available.
 
 The application does not connect directly to mail servers to verify mailboxes. Instead, it relies on the third-party API, so the checks available depend on that service.
+
+It could not solve issue:
+•	GreyLisiting ( Might or Might not)
+•	Rate Limiting /IP Reputation (With out API)
+•	All In Bound (Can’t do anything)
+•	SMTP server rejection (Have to retry)
 
 Some mail servers restrict mailbox verification or hide whether an address exists. Therefore, SMTP connectivity does not guarantee that a mailbox exists, and a deliverable result does not guarantee successful email delivery.
 
